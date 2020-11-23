@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const { getTiltleManual, genManualHtml } = require("./getManual");
+const { getTiltleManual, genManualHtml, checkDirYear } = require("./getManual");
 const { getFileFromServer } = require("./getFileFromServer");
 const cors = require("cors");
 const port = process.env.PORT || 3000;
@@ -14,9 +14,14 @@ app.use(bodyParser.text({ type: "text/html" }));
 
 app.post("/manual", async (req, res) => {
   console.log("manual");
-  const titleManual = await getTiltleManual(req.body);
-  const ManualHtml = await genManualHtml(titleManual, req.body);
-  res.status(200).send(ManualHtml);
+  const dirYear = await checkDirYear(req.body);
+  if (!dirYear.includes(req.body.YEAR)) {
+    res.send(500);
+  } else {
+    const titleManual = await getTiltleManual(req.body);
+    const ManualHtml = await genManualHtml(titleManual, req.body);
+    res.status(200).send(ManualHtml);
+  }
 });
 
 app.get("/getFileServer/:path", async (req, res) => {

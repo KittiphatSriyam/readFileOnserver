@@ -9,13 +9,35 @@ const server =
 exports.getTiltleManual = ({ ROOT_DIR, YEAR }) => {
   return new Promise((resolve, reject) => {
     const url = `${server}/${ROOT_DIR}/${YEAR}`;
-    resolve(fs.readdirSync(url));
+    try {
+      resolve(fs.readdirSync(url));
+    } catch (error) {
+      console.log("error->>", error);
+      resolve([]);
+    }
+  });
+};
+
+exports.checkDirYear = ({ ROOT_DIR }) => {
+  return new Promise((resolve, reject) => {
+    const url = `${server}/${ROOT_DIR}/`;
+    try {
+      resolve(fs.readdirSync(url));
+    } catch (error) {
+      console.log("error->>", error);
+      resolve([]);
+    }
   });
 };
 const getSubTiltleManual = ({ ROOT_DIR, YEAR }, titleManual) => {
   return new Promise((resolve, reject) => {
     const url = `${server}/${ROOT_DIR}/${YEAR}/${titleManual}`;
-    resolve(fs.readdirSync(url));
+    try {
+      resolve(fs.readdirSync(url));
+    } catch (error) {
+      console.log("error->>", error);
+      resolve([]);
+    }
   });
 };
 const getFileNameSever = ({ ROOT_DIR, YEAR }, titleManual, subTitleManual) => {
@@ -148,6 +170,13 @@ exports.genManualHtml = (titleManual, { ROOT_DIR, YEAR }) => {
           fileName = fileName.filter(
             (file) => file.trim().toLowerCase() != "thumbs.db"
           );
+
+          for (let i in fileName) {
+            if (fileName[i].split(".").length == 1) {
+              fileName.splice(i, 1);
+            }
+          }
+
           for (let i in fileName) {
             let path = `/${ROOT_DIR}/${YEAR}/${titleManual[no]}/${subTitle[id]}/${fileName[i]}`;
 
